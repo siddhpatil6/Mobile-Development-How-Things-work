@@ -35,7 +35,7 @@ class AirplaneModeChangeReceiver:BroadcastReceiver() {
 }
 ```
 
-Registering a BroadcastReceiver:
+<h3> Registering a BroadcastReceiver:
 ```
 IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED).also {
                      // receiver is the broadcast receiver that we have registered
