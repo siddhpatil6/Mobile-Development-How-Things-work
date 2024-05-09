@@ -56,12 +56,11 @@ Interceptor Types
 Interceptors added between the Application Code (our written code) and the OkHttp Core Library are referred to as application interceptors. These are the interceptors that we add with addInterceptor(). <br>
 
 <h3> 2. Network Interceptors </h3>
-
 Interceptors on the network: These are interceptors placed between the OkHttp Core Library and the server. These can be added to OkHttpClient by using the addNetworkInterceptor(). <br>
 
 <h2> Few general interceptors use-cases </h2>
 
-<h3> Logging interceptor </h3>
+<h3> 1. Logging interceptor </h3>
 In Retrofit 2, all network operations are performed via OkHttp library. OkHttp provides HttpLoggingInterceptorwhich logs HTTP request and response data. <br>
 
 HttpLoggingInterceptor has 4 levels of logging: <br>
@@ -123,6 +122,7 @@ Let’s say we have the API call from Client to Server and Cache-Control header 
 
 But what if the Cache-Control is not enabled from the server. We still can cache the response from OkHttp Client using Interceptor. <br>
 <br>
+
 ```
 class CacheInterceptor: Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -146,6 +146,7 @@ class CacheInterceptor: Interceptor {
 
 Let’s say that we have to make the API calls and we have to add Authorization Header in all the API calls. Either we can use it individually or we can centralize that using the Interceptor. <br>
 <br>
+
 ```
 class AuthInterceptor: Interceptor {
 
