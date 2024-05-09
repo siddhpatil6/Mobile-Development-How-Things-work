@@ -45,3 +45,150 @@ IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED).also {
       }
 ```
 
+
+<h1> Retrofit Interceptors for Beginners </h1>
+interceptors are a powerful concept that can monitor, rewrite, authenticate, cache and retry the API call. So basically, when we request API call, we can monitor the call or perform some tasks or set of interceptors in one call is also allowed. In a nutshell, Interceptors function very similar to airport security personnel during the security check process. They checked our boarding pass, stamped it, and then let us pass. <br>
+
+<h2> Interceptor Types </h2>
+Interceptor Types
+
+<h3> 1. Application Interceptors </h3>
+Interceptors added between the Application Code (our written code) and the OkHttp Core Library are referred to as application interceptors. These are the interceptors that we add with addInterceptor(). <br>
+
+<h3> 2. Network Interceptors </h3>
+
+Interceptors on the network: These are interceptors placed between the OkHttp Core Library and the server. These can be added to OkHttpClient by using the addNetworkInterceptor(). <br>
+
+<h2> Few general interceptors use-cases </h2>
+
+<h3> Logging interceptor </h3>
+In Retrofit 2, all network operations are performed via OkHttp library. OkHttp provides HttpLoggingInterceptorwhich logs HTTP request and response data. <br>
+
+HttpLoggingInterceptor has 4 levels of logging: <br>
+<br>
+BASIC – Logs request and response lines.<br>
+<br>
+BODY – Logs request and response lines and their respective headers and bodies (if present). This is the only log level where we will get the response body data. <br>
+<br>
+HEADERS – Logs request and response lines and their respective headers. <br>
+<br>
+NONE – No logs. Use this log level for production environments to enhance the apps performance.
+
+```
+val loggingInterceptor = HttpLoggingInterceptor().apply {
+    level = HttpLoggingInterceptor.Level.BODY
+}
+```
+
+<h3> 2. Retry interceptor </h3>
+<br>
+Retry intercepter is relly useful when API’s are interminent in giving response also when bandwidth is low and API is taking much time to give the response. Below i had a sample interceptor for it. <br>
+
+```
+class RetryInterceptor(private val retryAttempts: Int) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        for (i in 1..retryAttempts) {
+            try {
+                return chain.proceed(chain.request())
+            } catch (e: SocketTimeoutException) {
+                e.printStackTrace()
+            }
+        }
+        throw RuntimeException("failed to compile the request")
+    }
+}
+```
+
+<h3>3. API Key Interceptor </h3>
+
+API key interceptors are really needed one for most of the realtime projects where you need to add one API Key to make the request so rather than making it many times into many calls have same duplicated code to add a API key we should use an interceptor like below and enjoy it in all requests via OKHttp client :) <br>
+
+```
+class APIKeyInterceptor : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val currentUrl = chain.request().url
+        val newUrl = currentUrl.newBuilder().addQueryParameter("api_key", "api_key").build()
+        val currentRequest = chain.request().newBuilder()
+        val newRequest = currentRequest.url(newUrl).build()
+        return chain.proceed(newRequest)
+    }
+}
+```
+
+<h3> 4. Cache interceptor </h3>
+
+If we want to cache the response of the API call so that if we call the API again, the response comes out from Cache. <br>
+
+Let’s say we have the API call from Client to Server and Cache-Control header is enabled from the server, then OkHttp Core will respect that header and cache the response for a certain time being which was sent from the server. <br>
+
+But what if the Cache-Control is not enabled from the server. We still can cache the response from OkHttp Client using Interceptor. <br>
+<br>
+```
+class CacheInterceptor: Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val originalResponse = chain.proceed(chain.request())
+        return if (Utils.isNetworkAvailable(applicationContext)) {
+            val maxAge = 60
+            originalResponse.newBuilder()
+                .addHeader("Cache-control", "public, max-age = $maxAge")
+                .build()
+        } else {
+            val maxStale = 60 * 60 * 24 * 28 // 4 weeks
+            originalResponse.newBuilder()
+                .addHeader("Cache-control", "public, only-if-cache max-age = $maxStale")
+                .build()
+        }
+    }
+}
+```
+
+<h3> 5. Header via Interceptor </h3>
+
+Let’s say that we have to make the API calls and we have to add Authorization Header in all the API calls. Either we can use it individually or we can centralize that using the Interceptor. <br>
+<br>
+```
+class AuthInterceptor: Interceptor {
+
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val currentRequest = chain.request().newBuilder()
+        currentRequest.addHeader(AUTHORIZATION, TOKEN)
+
+        val newRequest = currentRequest.build()
+        return chain.proceed(newRequest)
+    }
+}
+```
+<br>
+Implementation of API client in retrofit using all these interceptors. <br>
+Here Iam using all the above interceptors in single API client. I know in general we never need all these interceptors in single project but I used all for demo purpose. <br>
+
+```
+object RetrofitBuilder {
+
+    private lateinit var retrofit: Retrofit
+
+    fun getRetrofit(): Retrofit {
+        if (!this::retrofit.isInitialized) {
+
+            val loggingInterceptor = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }
+
+            val client = OkHttpClient.Builder()
+                .addInterceptor(AuthInterceptor())
+                .addInterceptor(loggingInterceptor)
+                .addInterceptor(RetryInterceptor(3))
+                .addInterceptor(APIKeyInterceptor())
+                .build()
+
+            retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+        }
+
+        return retrofit
+    }
+}
+````
