@@ -255,3 +255,8 @@ When an ‘Activity’ or ‘Fragment’ is created, it will either create a new
 When an ‘Activity’ is recreated (e.g., due to a configuration change like screen rotation), the system keeps the ‘ViewModelStore’ alive and passes it to the new ‘Activity’ instance. This way, when the new ‘Activity’ instance asks for a ‘ViewModel’ of a particular class, the ‘ViewModelProvider’ finds the existing instance in the ‘ViewModelStore’ and returns it, ensuring that the ‘ViewModel’ survives the configuration change. <br>
 
 However, when the ‘Activity’ is finishing (i.e., it’s being destroyed permanently, not due to a configuration change), the ‘ViewModelStore’ is also cleared, and the ‘onCleared’ method is called on all ‘ViewModels’ in the store. <br>
+
+<h1> Difference between aab and apk ?</h1>
+<img width="1114" alt="Screenshot 2024-05-10 at 4 02 56 PM" src="https://github.com/siddhpatil6/AndroidBasics/assets/5618021/6cae8f94-98a9-405d-aca1-b92524f7533d">
+
+
