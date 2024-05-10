@@ -188,8 +188,70 @@ object RetrofitBuilder {
                 .client(client)
                 .build()
         }
-
         return retrofit
     }
 }
 ````
+
+<h1> How viewmodel get retain in configuration changes ?</h1>
+
+Before diving into the internals, let’s revisit what a ‘ViewModel’ is. A ‘ViewModel’ is an architectural component that is used to hold and manage data for views (such as Activities and Fragments) in a way that is conscious of lifecycle events. This helps to separate the responsibilities of data handling and view displaying, leading to more manageable and testable code.
+
+<h3> How ViewModel Works Internally </h3>
+When we create a ‘ViewModel’ instance, we usually use ‘ViewModelProvider’, like so:
+
+```
+val viewModel = ViewModelProvider(this).get(MyViewModel::class.java)
+```
+
+This ‘ViewModelProvider’ uses a ‘ViewModelStore’ to retain ‘ViewModel’ instances. Let’s have a look at a simplified ‘ViewModelProvider’:
+
+```
+class ViewModelProvider (
+  private val store: ViewModelStore, 
+  private val factory: Factory
+) {
+  fun <T: ViewModel> get(modelClass: Class<T>): T {
+    var viewModel = store.get(modelClass.name)
+  
+    if(viewModel == null) {
+      viewModel = factory.create(modelClass)
+      store.put(modelClass.name, viewModel)
+    }
+    
+    return viewModel as T
+  }
+
+  interface Factory {
+    fun <T: ViewModel> create(modelClass: Class<T>): T
+  }
+}
+```
+
+In the ‘get’ method, ‘ViewModelProvider’ first tries to get an existing ‘ViewModel’ from the ‘ViewModelStore’ using the class name as the key. If a ‘ViewModel’ with this key doesn’t exist, it creates a new one using the provided ‘Factory’, then stores it in the ‘ViewModelStore’.
+
+The ‘ViewModelStore’ is a simple container that holds ‘ViewModels’. It’s associated with the lifecycle of an ‘Activity’ or ‘Fragment’ and is retained during configuration changes.
+
+```
+class ViewModelStore {
+  private val map: HashMap<String, ViewModel> = HashMap()
+  
+  internal fun put(key: String, viewModel: ViewModel) {
+    val oldViewModel = map.put(key, viewModel)
+    oldViewModel?.onCleared()
+  }
+  
+  internal fun get(key: String): ViewModel? {
+    return map[key]
+  }
+}
+```
+<br>
+When an ‘Activity’ or ‘Fragment’ is created, it will either create a new ‘ViewModelStore’ or retrieve the one that was created during a previous configuration. <br>
+<br>
+<h3> How ViewModel Survives Configuration Changes </h3> <br>
+‘ViewModel’ survives configuration changes due to the way ‘ViewModelStore’ is kept alive by the ‘Activity’ or ‘Fragment’. <br>
+<br>
+When an ‘Activity’ is recreated (e.g., due to a configuration change like screen rotation), the system keeps the ‘ViewModelStore’ alive and passes it to the new ‘Activity’ instance. This way, when the new ‘Activity’ instance asks for a ‘ViewModel’ of a particular class, the ‘ViewModelProvider’ finds the existing instance in the ‘ViewModelStore’ and returns it, ensuring that the ‘ViewModel’ survives the configuration change. <br>
+
+However, when the ‘Activity’ is finishing (i.e., it’s being destroyed permanently, not due to a configuration change), the ‘ViewModelStore’ is also cleared, and the ‘onCleared’ method is called on all ‘ViewModels’ in the store. <br>
