@@ -71,7 +71,7 @@ BODY – Logs request and response lines and their respective headers and bodies
 <br>
 HEADERS – Logs request and response lines and their respective headers. <br>
 <br>
-NONE – No logs. Use this log level for production environments to enhance the apps performance.
+NONE – No logs. Use this log level for production environments to enhance the apps performance. <br>
 
 ```
 val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -193,7 +193,7 @@ object RetrofitBuilder {
 }
 ````
 
-<h1> How viewmodel get retain in configuration changes ?</h1>
+<h1> How viewmodel get retain in configuration changes ? </h1>
 
 Before diving into the internals, let’s revisit what a ‘ViewModel’ is. A ‘ViewModel’ is an architectural component that is used to hold and manage data for views (such as Activities and Fragments) in a way that is conscious of lifecycle events. This helps to separate the responsibilities of data handling and view displaying, leading to more manageable and testable code. <br>
 
@@ -228,9 +228,9 @@ class ViewModelProvider (
 }
 ```
 
-In the ‘get’ method, ‘ViewModelProvider’ first tries to get an existing ‘ViewModel’ from the ‘ViewModelStore’ using the class name as the key. If a ‘ViewModel’ with this key doesn’t exist, it creates a new one using the provided ‘Factory’, then stores it in the ‘ViewModelStore’.
+In the ‘get’ method, ‘ViewModelProvider’ first tries to get an existing ‘ViewModel’ from the ‘ViewModelStore’ using the class name as the key. If a ‘ViewModel’ with this key doesn’t exist, it creates a new one using the provided ‘Factory’, then stores it in the ‘ViewModelStore’.  <br>
 
-The ‘ViewModelStore’ is a simple container that holds ‘ViewModels’. It’s associated with the lifecycle of an ‘Activity’ or ‘Fragment’ and is retained during configuration changes.
+The ‘ViewModelStore’ is a simple container that holds ‘ViewModels’. It’s associated with the lifecycle of an ‘Activity’ or ‘Fragment’ and is retained during configuration changes.  <br>
 
 ```
 class ViewModelStore {
