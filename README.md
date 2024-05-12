@@ -195,16 +195,16 @@ object RetrofitBuilder {
 
 <h1> How viewmodel get retain in configuration changes ?</h1>
 
-Before diving into the internals, let’s revisit what a ‘ViewModel’ is. A ‘ViewModel’ is an architectural component that is used to hold and manage data for views (such as Activities and Fragments) in a way that is conscious of lifecycle events. This helps to separate the responsibilities of data handling and view displaying, leading to more manageable and testable code.
+Before diving into the internals, let’s revisit what a ‘ViewModel’ is. A ‘ViewModel’ is an architectural component that is used to hold and manage data for views (such as Activities and Fragments) in a way that is conscious of lifecycle events. This helps to separate the responsibilities of data handling and view displaying, leading to more manageable and testable code. <br>
 
 <h3> How ViewModel Works Internally </h3>
-When we create a ‘ViewModel’ instance, we usually use ‘ViewModelProvider’, like so:
+When we create a ‘ViewModel’ instance, we usually use ‘ViewModelProvider’, like so:  <br>
 
 ```
 val viewModel = ViewModelProvider(this).get(MyViewModel::class.java)
 ```
 
-This ‘ViewModelProvider’ uses a ‘ViewModelStore’ to retain ‘ViewModel’ instances. Let’s have a look at a simplified ‘ViewModelProvider’:
+This ‘ViewModelProvider’ uses a ‘ViewModelStore’ to retain ‘ViewModel’ instances. Let’s have a look at a simplified ‘ViewModelProvider’:  <br>
 
 ```
 class ViewModelProvider (
