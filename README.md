@@ -1,5 +1,10 @@
 # AndroidBasics
 Android Related Questions
+<h3>Broadcast Receiver </h3>
+<h1> Retrofit Interceptors for Beginners </h1>
+<h1> How viewmodel get retain in configuration changes ? </h1>
+<h1> Difference between aab and apk ?</h1>
+<h3>why stackoverflow exception occurs </h3>
 
 
 <h1>Broadcast Receiver </h1>
@@ -258,5 +263,23 @@ However, when the ‘Activity’ is finishing (i.e., it’s being destroyed perm
 
 <h1> Difference between aab and apk ?</h1>
 <img width="1114" alt="Screenshot 2024-05-10 at 4 02 56 PM" src="https://github.com/siddhpatil6/AndroidBasics/assets/5618021/6cae8f94-98a9-405d-aca1-b92524f7533d">
+
+
+<h1>why stackoverflow exception occurs </h1>
+A StackOverflowError occurs when a program recurses too deeply, causing the stack to overflow. This typically happens in situations where a function calls itself recursively without a proper termination condition, or when the recursion depth is too large for the available stack space. <br>
+
+Here's a general overview of how a StackOverflowError occurs: <br>
+
+Function Calls: When a function is called, a stack frame is created to store the function's local variables and execution context. This stack frame is added to the call stack. <br>
+ <br>
+Recursive Calls: In recursive functions, a function calls itself. Each recursive call adds a new stack frame to the call stack. <br>
+ <br>
+Limited Stack Space: The call stack has a limited amount of space. If a program recurses too deeply, adding more stack frames than the available space, it causes a stack overflow. <br>
+ <br>
+StackOverflowError: When the stack overflows, the program throws a StackOverflowError, indicating that the call stack has exceeded its capacity. <br>
+ <br>
+To prevent StackOverflowError, ensure that your recursive functions have a proper termination condition to stop the recursion. Also, consider using iterative solutions or optimizing your recursive algorithms to reduce the depth of recursion. <br>
+
+
 
 
