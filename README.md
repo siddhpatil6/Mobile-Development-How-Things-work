@@ -281,5 +281,73 @@ StackOverflowError: When the stack overflows, the program throws a StackOverflow
 To prevent StackOverflowError, ensure that your recursive functions have a proper termination condition to stop the recursion. Also, consider using iterative solutions or optimizing your recursive algorithms to reduce the depth of recursion. <br>
 
 
+<h1>Explain Launch Modes : </h1>
 
+<h2> 1. standard Launch Mode </h2>
+Default mode for activities. <br>
+Each time the activity is started, a new instance is created and pushed onto the task's stack. <br>
+<br>
+Example: <br>
+<br>
+Start A → A is created. <br>
+Start B from A → B is created and placed on top of A. <br>
+Start C from B → C is created and placed on top of B. <br>
+Start A from C → Another instance of A is created and placed on top of C. <br>
 
+<h3> Stack: </h3>
+
+```
+A → B → C → A (new)
+```
+
+<h2> 2. singleTop Launch Mode </h2>
+<br>
+If an instance of the activity is already at the top of the stack, a new instance is not created. Instead, the existing instance handles the intent via onNewIntent().<br>
+<br>
+Example:<br>
+<br>
+Start A → A is created. <br>
+Start B from A → B is created and placed on top of A. <br>
+Start C from B → C is created and placed on top of B. <br>
+Start C from C → Instead of creating a new instance, the existing C handles the intent. <br>
+
+<h3>Stack: </h3>
+
+```
+A → B → C
+```
+
+<h2> 3. singleTask Launch Mode </h2> 
+If an instance of the activity exists in the task, it is brought to the front, and all activities above it are cleared.
+The existing instance handles the new intent via onNewIntent(). <br>
+<br>
+Example:<br>
+<br>
+Start A → A is created.<br>
+Start B from A → B is created and placed on top of A.<br>
+Start C from B → C is created and placed on top of B.<br>
+Start A from C → The existing instance of A is brought to the front, and B and C are removed from the stack.<br>
+<br>
+
+<h3>Stack:</h3>
+
+```
+A
+```
+
+<h2>4. singleInstance Launch Mode </h2>
+<br>
+Similar to singleTask, but the activity runs in its own separate task.<br>
+No other activities can be started in the same task.<br>
+<br>
+Example:<br>
+Start A → A is created.<br>
+Start B from A → B is created and placed on top of A.<br>
+Start C from B → C is created and placed on top of B.<br>
+Start D (with singleInstance mode) from C → D is created in a new task.<br>
+Task Stack:<br>
+
+```
+Task 1: A → B → C
+Task 2: D
+```
