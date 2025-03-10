@@ -64,6 +64,109 @@ Android Related Questions
 
 <p>🚀 <strong>In simple words, SSL Pinning ensures your app talks only to the real server, preventing hackers from listening in.</strong></p>
 
+<h2>Best Ways to Avoid Memory Leaks in Android (Simplified)</h2>
+
+<h3>1. Use applicationContext Instead of activityContext</h3>
+<p>✅ <strong>Why?</strong> Activity context holds a reference to the activity, which can cause memory leaks if the activity is destroyed.</p>
+<pre>
+// ❌ Bad Practice (Leads to memory leaks)
+val myToast = Toast.makeText(this, "Hello", Toast.LENGTH_SHORT)
+
+// ✅ Good Practice (Uses application context)
+val myToast = Toast.makeText(applicationContext, "Hello", Toast.LENGTH_SHORT)
+</pre>
+
+<h3>2. Use Weak References for Long-Lived Objects</h3>
+<p>✅ <strong>Why?</strong> If an object lives longer than an activity (like a background task), it can cause a leak. Use <code>WeakReference</code>.</p>
+<pre>
+class MyTask(context: Context) {
+    private val weakContext = WeakReference(context)
+
+    fun doSomething() {
+        val context = weakContext.get()
+        context?.let {
+            Toast.makeText(it, "Task Done", Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+</pre>
+
+<h3>3. Avoid Storing Large Objects in Static Variables</h3>
+<p>✅ <strong>Why?</strong> Static variables live as long as the app, so they prevent objects from being garbage-collected.</p>
+<pre>
+// ❌ Bad Practice
+companion object {
+    var bitmap: Bitmap? = null  // Can cause a memory leak
+}
+
+// ✅ Good Practice
+companion object {
+    private var weakBitmap: WeakReference<Bitmap>? = null
+}
+</pre>
+
+<h3>4. Use ViewBinding Instead of findViewById</h3>
+<p>✅ <strong>Why?</strong> <code>findViewById</code> holds references longer than necessary, causing leaks. <code>ViewBinding</code> helps avoid this.</p>
+<pre>
+class MyActivity : AppCompatActivity() {
+    private var _binding: ActivityMainBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null  // Prevent memory leak
+    }
+}
+</pre>
+
+<h3>5. Unregister Listeners & Observers in onDestroy()</h3>
+<p>✅ <strong>Why?</strong> Registered listeners keep references to activities, preventing them from being garbage collected.</p>
+<pre>
+override fun onDestroy() {
+    super.onDestroy()
+    myButton.setOnClickListener(null)  // Avoid memory leak
+}
+</pre>
+
+<h3>6. Use Lifecycle-Aware Components</h3>
+<p>✅ <strong>Why?</strong> Lifecycle-aware components automatically clean up resources when the activity is destroyed.</p>
+<pre>
+class MyViewModel : ViewModel() {
+    val data = MutableLiveData<String>()
+
+    override fun onCleared() {
+        super.onCleared()
+        // Clean up resources here
+    }
+}
+</pre>
+
+<h3>7. Use LeakCanary for Debugging</h3>
+<p>✅ <strong>Why?</strong> LeakCanary helps detect memory leaks in your app.</p>
+<pre>
+dependencies {
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
+}
+</pre>
+
+<h3>Conclusion</h3>
+<ul>
+  <li>✅ Use <code>applicationContext</code> where possible</li>
+  <li>✅ Avoid static references to large objects</li>
+  <li>✅ Use <code>WeakReference</code> for long-lived objects</li>
+  <li>✅ Unregister listeners in <code>onDestroy()</code></li>
+  <li>✅ Use <code>ViewBinding</code> instead of <code>findViewById()</code></li>
+  <li>✅ Use lifecycle-aware components</li>
+  <li>✅ Use LeakCanary to detect leaks</li>
+</ul>
+<p>By following these practices, you can <strong>prevent memory leaks and keep your app efficient</strong>! 🚀</p>
+
 
 <h1>Broadcast Receiver </h1>
 
