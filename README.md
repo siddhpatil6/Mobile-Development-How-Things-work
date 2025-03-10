@@ -1,11 +1,69 @@
 # AndroidBasics
 Android Related Questions
+<h3>SSL Pinning in Android </h3>
 <h3>Broadcast Receiver </h3>
 <h3> Retrofit Interceptors for Beginners </h3>
 <h3> How viewmodel get retain in configuration changes ? </h3>
 <h3> Difference between aab and apk ?</h3>
 <h3>why stackoverflow exception occurs </h3>
 <h3>Explain Launch Modes </h3>
+
+<h2>SSL Pinning in Android (Simplified Explanation)</h2>
+
+<h3>What is SSL?</h3>
+<p>SSL (Secure Sockets Layer) ensures that data sent between your Android app and a server is <strong>encrypted</strong> and <strong>secure</strong>. It prevents hackers from spying on sensitive information like passwords or payment details.</p>
+
+<h3>What is SSL Pinning?</h3>
+<p>SSL Pinning is an extra security layer where the app <strong>remembers</strong> (or "pins") a specific SSL certificate. Instead of trusting any certificate the server presents, the app <strong>only trusts</strong> the pinned certificate.</p>
+
+<h3>Why is SSL Pinning Needed?</h3>
+<p>Without SSL Pinning, a hacker can use a <strong>fake certificate</strong> to intercept (MITM attack) your communication and steal sensitive data.</p>
+
+<h3>How SSL Pinning Works?</h3>
+<ol>
+    <li>The app stores the server’s SSL certificate (or public key).</li>
+    <li>When connecting to the server, the app <strong>compares</strong> the server’s certificate with the stored one.</li>
+    <li>If they match ✅ → Connection continues.</li>
+    <li>If they don’t ❌ → Connection is rejected (prevents fake certificates).</li>
+</ol>
+
+<h3>How to Implement SSL Pinning in Android?</h3>
+
+<h4>Certificate Pinning (Recommended) using OkHttp</h4>
+<pre><code>val client = OkHttpClient.Builder()
+    .certificatePinner(
+        CertificatePinner.Builder()
+            .add("yourserver.com", "sha256/your_certificate_hash")
+            .build()
+    )
+    .build()</code></pre>
+<p>- Replace <code>yourserver.com</code> with your server's domain.</p>
+<p>- Replace <code>"sha256/your_certificate_hash"</code> with your actual certificate fingerprint.</p>
+
+<h4>Public Key Pinning (Alternative)</h4>
+<p>Instead of pinning the entire certificate, you can pin just the <strong>public key</strong> inside it.</p>
+
+<h3>Pros of SSL Pinning</h3>
+<ul>
+    <li>✅ Protects against Man-in-the-Middle (MITM) attacks.</li>
+    <li>✅ Ensures the app only communicates with the real server.</li>
+</ul>
+
+<h3>Cons of SSL Pinning</h3>
+<ul>
+    <li>❌ If the certificate changes, the app must be updated.</li>
+    <li>❌ Misconfigured pinning can break the app’s network communication.</li>
+</ul>
+
+<h3>When to Use SSL Pinning?</h3>
+<ul>
+    <li>Banking apps</li>
+    <li>Payment apps</li>
+    <li>Apps handling sensitive data (health, finance, etc.)</li>
+</ul>
+
+<p>🚀 <strong>In simple words, SSL Pinning ensures your app talks only to the real server, preventing hackers from listening in.</strong></p>
+
 
 <h1>Broadcast Receiver </h1>
 
