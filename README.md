@@ -1,5 +1,6 @@
 # AndroidBasics
 Android Related Questions
+<h3>How Push Notifications Work in Android</h3>
 <h3>SSL Pinning in Android </h3>
 <h3>Broadcast Receiver </h3>
 <h3> Retrofit Interceptors for Beginners </h3>
@@ -7,6 +8,53 @@ Android Related Questions
 <h3> Difference between aab and apk ?</h3>
 <h3>why stackoverflow exception occurs </h3>
 <h3>Explain Launch Modes </h3>
+
+<h2>How Push Notifications Work in Android</h2>
+
+<h3>1. App Registers with Firebase Cloud Messaging (FCM)</h3>
+<p>When the app starts, it asks Firebase for a unique token.</p>
+<p>Firebase gives a token that identifies the device.</p>
+
+<h3>2. Server Stores the Token</h3>
+<p>The app sends this token to the server.</p>
+<p>The server saves the token to send messages later.</p>
+
+<h3>3. Server Sends a Notification Request to FCM</h3>
+<p>When the server wants to send a notification, it sends a request to FCM.</p>
+<p>FCM processes the request and prepares the notification.</p>
+
+<h3>4. FCM Delivers the Notification</h3>
+<p>FCM sends the notification to the target device using the token.</p>
+<p>If the device is online, it receives the notification immediately.</p>
+
+<h3>5. App Receives and Displays the Notification</h3>
+<p>If the app is open, it can handle the message inside the app.</p>
+<p>If the app is closed, the notification appears in the status bar.</p>
+
+<h3>6. Example Code</h3>
+<pre>
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    @Override
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        showNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
+    }
+
+    private void showNotification(String title, String message) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "channel_id")
+                .setContentTitle(title)
+                .setContentText(message)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setAutoCancel(true);
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
+    }
+}
+</pre>
+
+<h3>7. Conclusion</h3>
+<p>Push notifications help apps send updates to users even when the app is not open.</p>
+<p>They are useful for alerts, messages, and reminders.</p>
+
 
 <h2>SSL Pinning in Android (Simplified Explanation)</h2>
 
